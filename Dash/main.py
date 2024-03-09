@@ -3,12 +3,11 @@ from datetime import datetime
 import matplotlib.dates as mdates
 import pandas as pd 
 
-df = pd.read_csv('pm25_predictions_for_next_7_days.csv') 
-# print(df)
+df = pd.read_csv('predict_hour.csv') 
 
 # ข้อมูลจาก DATETIMEDATA และ prediction_label
 datetimes = df['DATETIMEDATA'].tolist()
-prediction_labels = df['prediction_label'].tolist()
+prediction_labels = df['PREDICTION_PM25'].tolist()
 
 # แปลงข้อมูล datetimes เป็นรูปแบบ datetime
 datetimes = [datetime.strptime(dt, "%Y-%m-%d %H:%M:%S") for dt in datetimes]
@@ -31,3 +30,24 @@ plt.gca().xaxis.set_major_locator(mdates.HourLocator(interval=1))
 # แสดงกราฟ
 plt.tight_layout()
 plt.show()
+
+print("-------------------------------------")
+
+# df = pd.read_csv('predict_hour.csv') 
+
+# # ดึงข้อมูลจาก DataFrame
+# DATETIMEDATA = df['DATETIMEDATA'].tolist()
+# PM25 = df['PREDICTION_PM25'].tolist()
+    
+# # พล็อตกราฟ
+# plt.plot(DATETIMEDATA, PM25, color='blue', marker='o', linestyle='-')
+
+# # กำหนดชื่อแกน
+# plt.xlabel('Date Time')
+# plt.ylabel('Temperature (°C)')
+# plt.title('Temperature Variation')
+
+# # แสดงกราฟ
+# plt.xticks(rotation=45)  # หมุนข้อมูลในแกน x 45 องศาเพื่อป้องกันการซ้อนทับ
+# plt.tight_layout()  # ปรับแต่งเล็บของกราฟ
+# plt.show()
