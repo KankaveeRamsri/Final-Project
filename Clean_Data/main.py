@@ -1,7 +1,7 @@
 import pandas as pd 
 from pprint import pformat
 
-data = pd.read_csv('Data/PM25_44t_2023-12-01_2024-02-29.csv')
+data = pd.read_csv('Data/PM25_44t_2024-01-01_2024-03-7.csv')
 
 count_Nan = data.isnull().sum()
 print("A number of NaN in each columns : ")
