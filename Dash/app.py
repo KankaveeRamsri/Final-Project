@@ -34,9 +34,9 @@ app.layout = html.Div(
     children=[
         html.Div(
             children=[
-                html.P(children="🌬️", className="header-emoji"),
+                html.P(children="📈", className="header-emoji"),
                 html.H1(
-                    children="Air Quality Analytics", className="header-title"
+                    children="Dust forecast pm.5", className="header-title"
                 ),
                 html.P(
                     children="Analyze the air quality data",
@@ -138,7 +138,8 @@ app.layout = html.Div(
             ],
             className="wrapper",
         ),
-    ]
+    ],
+    className="nigga",
 )
 
 # Define app callbacks
@@ -207,7 +208,7 @@ def update_chart(selected_parameter, start_date, end_date, chart_type):
         "title": f"Air Quality Over Time - {selected_parameter}",
         "xaxis": {"title": "Datetime"},
         "yaxis": {"title": selected_parameter},
-        "colorway": ["#17B897"],  # or any other color
+        "colorway": ["#17B897"],  # or any other color 
     }
     return {"data": [trace], "layout": layout}
 
