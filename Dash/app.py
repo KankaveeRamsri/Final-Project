@@ -7,7 +7,7 @@ import pandas as pd
 import plotly.graph_objs as go
 
 # Read data from CSV file
-data = pd.read_csv("predict_day.csv")
+data = pd.read_csv("predict_day_WD.csv")
 data["DATETIMEDATA"] = pd.to_datetime(data["DATETIMEDATA"], format="%Y-%m-%d")
 data.sort_values("DATETIMEDATA", inplace=True)
 
