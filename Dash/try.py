@@ -1,7 +1,7 @@
 # Import necessary libraries
 from dash import Dash
 import dash_bootstrap_components as dbc
-from dash import html, dcc, Input, Output
+from dash import html, dcc, Input, Output, State
 
 import pandas as pd
 import plotly.graph_objs as go
@@ -10,10 +10,6 @@ import plotly.graph_objs as go
 data = pd.read_csv("predict.csv")
 data["DATETIMEDATA"] = pd.to_datetime(data["DATETIMEDATA"], format="%Y-%m-%d")
 data.sort_values("DATETIMEDATA", inplace=True)
-
-# data2 = pd.read_csv("model_predictions.csv")
-# data2["DATETIMEDATA"] = pd.to_datetime(data["DATETIMEDATA"], format="%Y-%m-%d %H:%M:%S")
-# data2.sort_values("DATETIMEDATA", inplace=True)
 
 # Define external stylesheets
 external_stylesheets = [
@@ -30,7 +26,7 @@ server = app.server
 app.title = "Air Quality Analytics: Understand Air Quality!"
 
 # Define the layout of the app
-app.layout = html.Div(
+layout1 = html.Div(
     children=[
         html.Div(
             children=[
@@ -201,57 +197,4 @@ def update_chart(selected_parameter, start_date, end_date, chart_type):
         trace = {
             "x": filtered_data["DATETIMEDATA"],
             "y": filtered_data[selected_parameter],
-            "type": "bar",
-        }
-        
-    layout = {
-        "title": f"Air Quality Over Time - {selected_parameter}",
-        "xaxis": {"title": "Datetime"},
-        "yaxis": {"title": selected_parameter},
-        "colorway": ["#17B897"],  # or any other color 
-    }
-    return {"data": [trace], "layout": layout}
-
-# Callback for updating daily statistics chart
-@app.callback(
-    Output("daily-stats", "figure"),
-    [
-        Input("parameter-filter", "value"),
-        Input("date-range", "start_date"),
-        Input("date-range", "end_date"),
-    ],
-)
-def update_daily_stats(selected_parameter, start_date, end_date):
-    mask = (
-        (data["DATETIMEDATA"] >= start_date)
-        & (data["DATETIMEDATA"] <= end_date)
-    )
-    filtered_data = data.loc[mask]
-
-    # Group by date and calculate daily maximum, minimum, and mean values
-    daily_stats = filtered_data.groupby(filtered_data["DATETIMEDATA"].dt.date)[selected_parameter].agg(['max', 'min', 'mean']).reset_index()
-
-    # Create traces for each statistic
-    traces = []
-    for stat in ['max', 'min', 'mean']:
-        traces.append(go.Scatter(
-            x=daily_stats["DATETIMEDATA"],
-            y=daily_stats[stat],
-            mode='lines',
-            name=stat.capitalize()  # Capitalize the statistic name for legend
-        ))
-
-    layout = {
-        "title": f"Daily Statistics - {selected_parameter}",
-        "xaxis": {"title": "Date"},
-        "yaxis": {"title": selected_parameter},
-        "colorway": ["#FF5733", "#33FF57", "#5733FF"],  # Different color for each statistic
-    }
-
-    return {"data": traces, "layout": layout}
-
-
-# Run the app if the script is executed directly
-if __name__ == "__main__":
-    app.run_server(debug=True)
-
+           
