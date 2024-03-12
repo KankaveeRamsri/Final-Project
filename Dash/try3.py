@@ -1,46 +1,36 @@
 # Import necessary libraries
-from dash import Dash
+from dash import Dash, dcc, html, Input, Output
+from dash.dependencies import State
 import dash_bootstrap_components as dbc
-from dash import html, dcc, Input, Output
-
 import pandas as pd
 import plotly.graph_objs as go
 
 # Read data from CSV file
-data = pd.read_csv("mix_info.csv")
+data = pd.read_csv("predict_day_WD.csv")
 data["DATETIMEDATA"] = pd.to_datetime(data["DATETIMEDATA"], format="%Y-%m-%d")
 data.sort_values("DATETIMEDATA", inplace=True)
 
-# Define external stylesheets
-external_stylesheets = [
-    {
-        "href": "https://fonts.googleapis.com/css2?"
-        "family=Lato:wght@400;700&display=swap",
-        "rel": "stylesheet",
-    },
-]
-
 # Initialize the Dash app
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 app.title = "Air Quality Analytics: Understand Air Quality!"
 
 # Define the layout of the app
-app.layout = html.Div(
-    children=[
-        html.Div(
-            children=[
-                html.P(children="📈", className="header-emoji"),
-                html.H1(
-                    children="Dust forecast pm.5", className="header-title"
-                ),
-                html.P(
-                    children="Analyze the air quality data",
-                    className="header-description",
-                ),
-            ],
-            className="header",
-        ),
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(
+        className="header",
+        children=[
+            html.P(children="📈", className="header-emoji"),
+            html.H1(children="Dust forecast pm.5", className="header-title"),
+            html.P(children="Analyze the air quality data", className="header-description"),
+        ]
+    ),
+    html.Div(id='page-content')
+])
+
+# Page 1 layout
+page1_layout = html.Div([
         html.Div(
             children=[
                 html.Div(
@@ -109,6 +99,17 @@ app.layout = html.Div(
         html.Div(
             children=[
                 html.Div(
+                    children=dcc.Graph(
+                        id="daily-stats", config={"displayModeBar": False},
+                    ),
+                    className="card",
+                ),
+            ],
+            className="wrapper",
+        ),
+        html.Div(
+            children=[
+                html.Div(
                     children=[
                         html.Div(
                             className="menu-title"
@@ -124,6 +125,7 @@ app.layout = html.Div(
             className="wrapper",
         ),
     ],
+    className="nigga",
 )
 
 # Define app callbacks
@@ -195,6 +197,65 @@ def update_chart(selected_parameter, start_date, end_date, chart_type):
         "colorway": ["#17B897"],  # or any other color 
     }
     return {"data": [trace], "layout": layout}
+
+# Callback for updating daily statistics chart
+@app.callback(
+    Output("daily-stats", "figure"),
+    [
+        Input("parameter-filter", "value"),
+        Input("date-range", "start_date"),
+        Input("date-range", "end_date"),
+    ],
+)
+def update_daily_stats(selected_parameter, start_date, end_date):
+    mask = (
+        (data["DATETIMEDATA"] >= start_date)
+        & (data["DATETIMEDATA"] <= end_date)
+    )
+    filtered_data = data.loc[mask]
+
+    # Group by date and calculate daily maximum, minimum, and mean values
+    daily_stats = filtered_data.groupby(filtered_data["DATETIMEDATA"].dt.date)[selected_parameter].agg(['max', 'min', 'mean']).reset_index()
+
+    # Create traces for each statistic
+    traces = []
+    for stat in ['max', 'min', 'mean']:
+        traces.append(go.Scatter(
+            x=daily_stats["DATETIMEDATA"],
+            y=daily_stats[stat],
+            mode='lines',
+            name=stat.capitalize()  # Capitalize the statistic name for legend
+        ))
+
+    layout = {
+        "title": f"Daily Statistics - {selected_parameter}",
+        "xaxis": {"title": "Date"},
+        "yaxis": {"title": selected_parameter},
+        "colorway": ["#FF5733", "#33FF57", "#5733FF"],  # Different color for each statistic
+    }
+
+    return {"data": traces, "layout": layout}
+
+    
+
+# Page 2 layout
+page2_layout = html.Div([
+    html.H1('Page 2'),
+   
+])
+
+# Callback to switch between pages
+@app.callback(
+    Output('page-content', 'children'),
+    [Input('url', 'pathname')]
+)
+def display_page(pathname):
+    if pathname == '/page-1':
+        return page1_layout
+    elif pathname == '/page-2':
+        return page2_layout
+    else:
+        return '404 Page Not Found'
 
 # Run the app if the script is executed directly
 if __name__ == "__main__":

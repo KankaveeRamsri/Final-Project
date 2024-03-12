@@ -5,7 +5,7 @@ body {
 }
 
 .header {
-    background-color: blue;
+    background-color: #0A46F5;
     height: 288px;
     padding: 16px 0 0 0;
 }
@@ -60,7 +60,7 @@ body {
     justify-content: space-evenly;
     padding-top: 24px;
     margin: -80px auto 0 auto;
-    background-color: #FFFFFF;
+    background-color: #5CCAFA;
     box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18);
 }
 
