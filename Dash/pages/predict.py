@@ -1,15 +1,14 @@
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output, State
+# Import necessary libraries
 from dash import Dash
 import dash_bootstrap_components as dbc
+from dash import html, dcc, Input, Output
+import dash
 
 import pandas as pd
 import plotly.graph_objs as go
 
 # Read data from CSV file
-data = pd.read_csv("predict_day_WD.csv")
+data = pd.read_csv("predict_WD_PM25.csv")
 data["DATETIMEDATA"] = pd.to_datetime(data["DATETIMEDATA"], format="%Y-%m-%d")
 data.sort_values("DATETIMEDATA", inplace=True)
 
@@ -26,22 +25,21 @@ external_stylesheets = [
     },
 ]
 
-# สร้างแอปพลิเคชัน Dash
-app = dash.Dash(__name__)
+# Initialize the Dash app
+# dash.register_page(__name__)
+app = Dash(__name__, external_stylesheets=external_stylesheets)
+# app = dash.register_page(__name__, external_stylesheets=external_stylesheets)
+server = app.server
+app.title = "Air Quality Analytics: Understand Air Quality!"
 
-# สร้างข้อมูล DataFrame ขึ้นมาเพื่อใช้เก็บข้อมูล
-df = pd.DataFrame(columns=['Name', 'Age'])
-
-
-# สร้างเลเอาท์สำหรับหน้าแรก
-# Define page 1 layout
-page_1_layout = html.Div(
+# Define the layout of the app
+app.layout = html.Div(
     children=[
         html.Div(
             children=[
                 html.P(children="📈", className="header-emoji"),
                 html.H1(
-                    children="Dust forecast pm.5", className="header-title"
+                    children="Dust forecast pm2.5", className="header-title"
                 ),
                 html.P(
                     children="Analyze the air quality data",
@@ -61,7 +59,7 @@ page_1_layout = html.Div(
                                 {"label": param, "value": param}
                                 for param in data.columns[1:]
                             ],
-                            value="PM25",
+                            value="PREDICTION_PM25",
                             clearable=False,
                             className="dropdown",
                         ),
@@ -254,124 +252,9 @@ def update_daily_stats(selected_parameter, start_date, end_date):
     }
 
     return {"data": traces, "layout": layout}
-# Define app callbacks
 
-# Callbacks for page 1 components
-# ...
 
-# Define page 2 layout
-page_2_layout = html.Div([
-    html.H1('Page 2'),
-    html.Div(id='display-data')
-])
-
-# Define app callbacks
-
-# Callbacks for page 2 components
-# ...
-
-# Initialize the Dash app
-app = dash.Dash(__name__)
-
-# Define the main app layout with tabs
-app.layout = html.Div([
-    dcc.Tabs(id='tabs', value='page-1', children=[
-        dcc.Tab(label='Page 1', value='page-1'),
-        dcc.Tab(label='Page 2', value='page-2')
-    ]),
-    html.Div(id='tabs-content')
-])
-
-# Define callback to render content based on selected tab
-@app.callback(
-    Output('tabs-content', 'children'),
-    [Input('tabs', 'value')]
-)
-def render_content(tab):
-    if tab == 'page-1':
-        return page_1_layout
-    elif tab == 'page-2':
-        return page_2_layout
-
-# Run the app
-if __name__ == '__main__':
+# Run the app if the script is executed directly
+if __name__ == "__main__":
     app.run_server(debug=True)
 
-
-# สร้างเลเอาท์สำหรับหน้าที่สอง
-page_2_layout = html.Div([
-    html.H1('Page 2'),
-    html.Div(id='display-data')
-])
-
-# ประกาศ callback สำหรับเพิ่มข้อมูล
-@app.callback(
-    Output('output-add-data', 'children'),
-    [Input('add-button', 'n_clicks')],
-    [State('name-input', 'value'),
-     State('age-input', 'value')]
-)
-def add_data(n_clicks, name, age):
-    if n_clicks > 0:
-        global df
-        df = df.append({'Name': name, 'Age': age}, ignore_index=True)
-        return f'Data added: Name - {name}, Age - {age}'
-
-# ประกาศ callback สำหรับแสดงข้อมูล
-@app.callback(
-    Output('display-data', 'children'),
-    [Input('name-input', 'value'),
-     Input('age-input', 'value')]
-)
-def display_data(name, age):
-    global df
-    return html.Table([
-        html.Thead(
-            html.Tr([html.Th('Name'), html.Th('Age')])
-        ),
-        html.Tbody([
-            html.Tr([
-                html.Td(df.iloc[i]['Name']),
-                html.Td(df.iloc[i]['Age'])
-            ]) for i in range(len(df))
-        ])
-    ])
-
-# กำหนดเลเอาท์หลักของแอปพลิเคชัน Dash
-app.layout = html.Div([
-    dcc.Tabs(id='tabs', value='page-1', children=[
-        dcc.Tab(label='Page 1', value='page-1'),
-        dcc.Tab(label='Page 2', value='page-2')
-    ]),
-    html.Div(id='tabs-content')
-])
-
-# ประกาศ callback สำหรับเลือกหน้า
-@app.callback(
-    Output('tabs-content', 'children'),
-    [Input('tabs', 'value')]
-)
-def render_content(tab):
-    if tab == 'page-1':
-        return page_1_layout
-    elif tab == 'page-2':
-        return page_2_layout
-    
-app.layout = html.Div(
-    children=[
-        html.P(children="📈", className="header-emoji"),
-        html.H1(
-            children="Dust forecast pm.5", className="header-title"
-        ),
-        html.P(
-            children="Analyze the air quality data",
-            className="header-description",
-        ),
-    ],
-    className="header"
-)
-
-
-# เริ่มการทำงานของแอปพลิเคชัน Dash
-if __name__ == '__main__':
-    app.run_server(debug=True)

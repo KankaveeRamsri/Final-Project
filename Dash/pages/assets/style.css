@@ -96,3 +96,28 @@ body {
 .custom-table th {
     background-color: #f2f2f2;
 }
+
+.navbar {
+    background-color: #2c3e50; /* สีพื้นหลังของ Navbar (สีน้ำเงินเข้ม) */
+    overflow: hidden;
+}
+
+.navbar a {
+    float: left;
+    display: block;
+    color: #ecf0f1; /* สีข้อความ */
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    transition: background-color 0.3s; /* เพิ่ม transition เพื่อสร้างเอฟเฟกต์ที่สามารถเห็นได้ */
+}
+
+.navbar a:hover {
+    background-color: #34495e; /* สีพื้นหลังเมื่อเม้าส์ไปชี้ที่ลิงค์ (สีน้ำเงินเข้ม) */
+    color: #ffffff; /* สีข้อความเมื่อเม้าส์ชี้ที่ลิงค์ */
+}
+
+.navbar a.active {
+    background-color: #16a085; /* สีพื้นหลังของลิงค์ที่ถูกเลือก (สีเขียวเข้ม) */
+    color: #ffffff; /* สีข้อความเมื่อลิงค์ถูกเลือก */
+}
