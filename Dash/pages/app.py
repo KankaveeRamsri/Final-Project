@@ -50,7 +50,7 @@ data_layout = html.Div(
             children=[
                 html.P(children="📈", className="header-emoji"),
                 html.H1(
-                    children="weather information", className="header-title"
+                    children="Air quality information", className="header-title"
                 ),
                 html.P(
                     children="Historical air quality data",
